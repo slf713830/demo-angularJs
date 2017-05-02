@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>图书管理系统</title>
+		<link rel="stylesheet" type="text/css" href="http://cdn.staticfile.org/twitter-bootstrap/3.0.1/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="./main.css">
+		<script src="./angular.js"></script>
+		
+	</head>
+	<body ng-app="my-app">
+		
+		<div class="container" ng-controller="firstContrl">
+			<h3 style="text-align:center;color:#4682B4;">图书管理系统</h3>
+			<div class="header">
+				<input type="text" placeholder="请输入关键字" ng-model="inputVal1"/>
+				<div class="btn-group">
+					<button class="btn btn-default">{{choose}}</button> <button data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></button>
+					<ul class="dropdown-menu">
+						<li>
+							<a href="" ng-click="findBook()">书名</a>
+						</li>
+						<li>
+							<a href="" ng-click="findAuthor()">作者</a>
+						</li>
+						<li>
+							<a href="" ng-click="findPrice()">价格</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="row clearfix">
+				<div class="col-md-12 column">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>
+									编号
+								</th>
+								<th ng-click="changeorder('id')">
+									ID
+								</th>
+								<th ng-click="changeorder('book')">
+									书名
+								</th>
+								<th ng-click="changeorder('author')">
+									作者
+								</th>
+								<th ng-click="changeorder('price')">
+									价格
+								</th>
+								<th></th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="x in data | filter:bookFun(cg) | orderBy:order:kg">
+								<td>
+									{{$index+1}}
+								</td>
+								<td>
+									{{x.id}}
+								</td>
+								<td>
+									{{x.book}}
+								</td>
+								<td>
+									{{x.author}}
+								</td>
+								<td>
+									{{x.price | currency:'￥'}}
+								</td>
+								<td style="width:160px">
+									<button ng-click="updata()">修改</button>
+								</td>
+								<td style="width:160px">
+									<button style="background:#CD0000;" data-toggle="modal" data-target="#myModal" ng-click = 'setIndex($index)'>删除</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div>
+				<input type="text" placeholder="ID" ng-model="newId"/>
+				<input type="text" placeholder="书名" ng-model="newBook"/>
+				<input type="text" placeholder="作者" ng-model="newAuthor"/>
+				<input type="text" placeholder="价格" ng-model="newPrice"/>
+				<button ng-click="addBook()">增加</button>
+			</div>
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			    <div class="modal-dialog">
+			        <div class="modal-content">
+			            <div class="modal-header">
+			                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			                <h4 class="modal-title" id="myModalLabel">警告！</h4>
+			            </div>
+			            <div class="modal-body">是否确认删除{{Book}}该书本？</div>
+			            <div class="modal-footer">
+			                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click = 'deleteBook()'>确认删除</button>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+
+			<div class="modal" id="modal-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button class="close" data-dismiss="modal">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                            <h3 class="modal-title">修改商品</h3>
+                        </div>
+
+                        <div class="modal-body">
+                            <div>ID</div>
+                            <input ng-model="prod.prodid" value="{{prod.prodid}}">
+                            <div>书名</div>
+                            <input ng-model="prod.prodbook" value="{{prod.prodbook}}">
+                            <div>作者</div>
+                            <input ng-model="prod.prodauthor" value="{{prod.prodauthor}}">
+                            <div>价格</div>
+                            <input ng-model="prod.prodprice" value="{{prod.prodprice}}">
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="btn btn-default" data-dismiss="modal">关闭</button>
+                            <button class="btn btn-success" ng-click="save()">确定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           
+
+		</div>
+
+		<script src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+		<script src="http://cdn.staticfile.org/twitter-bootstrap/3.0.1/js/bootstrap.min.js"></script>
+		<script>
+			var myapp = angular.module('my-app',[]);
+			myapp.service('service01',function(){
+				this.findBook1 = function(a){
+					return a="书名";
+				}
+
+				this.findAuthor1 = function(a){
+					return a = "作者";
+				}
+				this.findAuthor2 = function(b){
+					return b = "author";
+				}
+				this.findPrice1 = function(a){
+					return a = "价格";
+				}
+				this.findPrice2 = function(b){
+					return a = "price";
+				}
+				this.bookFun1 = function(cg,val){
+					var obj = {};
+					obj[cg] = val;
+					return obj;
+				}
+
+				this.addBook1 = function(data,newId,newBook,newAuthor,newPrice){
+					for(var i=0;i< data.length;i++){
+						if(newId == data[i].id){
+							alert("此书已存在！");
+							newId='';
+							newBook='';
+							newAuthor='';
+							newPrice='';
+						}
+					}
+
+				$.post('/addBook',{'id':newId,'book':newBook,'author':newAuthor,'price':newPrice},function(data) {
+						if(data.status == 1){
+							if(newId && newBook && newAuthor && newPrice){
+								// if(newId.length == 1){
+								// 	newId = "0" + newId;
+								// }
+								newId= '';
+								newBook='';
+								newAuthor='';
+								newPrice='';
+							}else{
+								newId= '';
+								newBook='';
+								newAuthor='';
+								newPrice='';
+							}
+						}else{
+							console.log('插入失败')
+						}
+						
+					})
+					
+				}
+
+				this.setIndex1 = function(idx,getindex){
+					
+					return idx;
+				}
+				this.deleteBook1 = function(lsid,scope){
+					$.post('/deleteBook',{id:lsid},function(data) {
+						if(data.status == 1){
+							// scope.data.splice(getindex,1)
+						}
+					})
+				}
+
+				this.changeorder1 = function(ls){
+					return ls;
+				}
+
+				this.updata1 = function(x,scope){
+					$('#modal-1').modal('show');
+					scope.prod.prodid = x.id;
+					scope.prod.prodbook = x.book;
+					scope.prod.prodauthor = x.author;
+					scope.prod.prodprice = x.price;
+				}
+
+				this.save = function(scope,lsid){
+					$('#modal-1').modal('hide');
+					$.post('/save',{id:scope.prod.prodid,book:scope.prod.prodbook,author:scope.prod.prodauthor,price:scope.prod.prodprice,tem:lsid})
+					for(var i=0;i<scope.data.length;i++){
+						if(lsid == scope.data[i].id){
+							scope.data[i].id = scope.prod.prodid;
+							scope.data[i].book = scope.prod.prodbook;
+							scope.data[i].author = scope.prod.prodauthor;
+							scope.data[i].price = scope.prod.prodprice;
+						}
+					}
+				}				
+
+			})
+			
+			myapp.controller('firstContrl',['$scope','$http','service01',function($scope,$http,service01){
+				
+				var lsid = 0;				
+				$scope.data = [];
+				$.ajax({
+					url:"/booktest",
+					type:"post",
+					async:false,
+					success:function(data){
+
+						for(i in data.booklist){
+							$scope.data.push(data.booklist[i])
+						}
+					}
+				})
+
+				$scope.cg = "book";
+				$scope.bookFun = function(cg){
+					return service01.bookFun1($scope.cg,$scope.inputVal1)
+				}				
+				
+				$scope.newId='';
+				$scope.newBook='';
+				$scope.newAuthor='';
+				$scope.newPrice='';
+				$scope.addBook = function(){
+					service01.addBook1($scope.data,$scope.newId,$scope.newBook,$scope.newAuthor,$scope.newPrice)
+				}
+
+				$scope.choose="选择";
+				$scope.findBook = function(){
+					$scope.choose = service01.findBook1($scope.choose)
+				}
+				
+				$scope.findAuthor = function(){
+					$scope.choose = service01.findAuthor1($scope.choose);
+					$scope.cg = service01.findAuthor2($scope.cg);
+				}
+				
+				$scope.findPrice = function(){
+					$scope.choose = service01.findPrice1($scope.choose);
+					$scope.cg = service01.findPrice2($scope.cg);
+				}				
+
+				$scope.getindex = "";
+				$scope.setIndex = function(idx){
+					lsid = this.x.id
+					$scope.getindex = service01.setIndex1(idx,$scope.getindex);
+				}
+				
+				$scope.deleteBook = function(){
+
+					service01.deleteBook1(lsid,$scope);
+				}				
+
+				$scope.order="id";
+				$scope.kg = false;
+
+				$scope.changeorder = function(ls){
+					$scope.order = service01.changeorder1(ls,$scope.order);
+					$scope.kg = !$scope.kg;
+				}
+				$scope.prod = {};
+				
+				$scope.updata = function(){					
+					service01.updata1(this.x,$scope);
+					$scope.str = service01.updata1(this.x,$scope);
+					lsid = this.x.id
+				}
+				$scope.save = function(){
+					service01.save($scope,lsid);					
+				}
+			}])
+		</script>
+	</body>
+</html>
